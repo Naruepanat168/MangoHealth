@@ -6,6 +6,7 @@ import cv2
 from keras.models import load_model
 from keras.preprocessing.image import load_img
 import numpy as np
+import os
 
 # line_bot_api = LineBotApi('LINE_CHANNEL_ACCESS_TOKEN')
 # handler = WebhookHandler('LINE_CHANNEL_SECRET')
@@ -13,6 +14,10 @@ import numpy as np
 line_bot_api = LineBotApi('7Y10gL12VmYp/4zAWn4PQxGQ0EQR7Jbh4ZOtKFEEUgH0g00kZNO5JUgZ0h/GnLPB0A/43R7G8KujRkicjukFOPfcgthBYm3oz44T0HEyEvFKyROkpXDtDrDAMpTns6xX2rycAwR9U6lxFt9Yaa9vhAdB04t89/1O/w1cDnyilFU=')
 handler = WebhookHandler('a1f71912a687e5b25b3ca449ed9e4629')
 app = Flask(__name__)
+
+directory = "uploadImages"
+if not os.path.exists(directory):
+    os.makedirs(directory)
 
 # Webhook route for LINE Messaging API
 @app.route('/webhook', methods=['GET','POST'])
@@ -51,14 +56,16 @@ def handle_image_message(event):
 
     # ตั้งชื่อไฟล์
     filename = f"image_{event.message.id}.jpg"
+    filepath = os.path.join(directory, filename)
+
 
     # บันทึกไฟล์
-    with open(filename, "wb") as f:
+    with open(filepath, "wb") as f:
         for chunk in message_content.iter_content():
             f.write(chunk)
 
     # อ่านรูปภาพ
-    img1 = cv2.imread(filename)
+    img1 = cv2.imread(filepath)
 
     # แปลงสี
     img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
